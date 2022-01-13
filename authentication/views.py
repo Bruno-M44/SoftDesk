@@ -1,18 +1,11 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
-
 from django.contrib.auth.models import User
+from rest_framework.viewsets import ModelViewSet
 from authentication.serializers import SignupSerializer
 
 
-class SignupView(APIView):
-    def get(self, *args, **kwargs):
-        users = User.objects.all()
-        serializer = SignupSerializer(users, many=True)
-        return Response(serializer.data)
+class SignupViewset(ModelViewSet):
+    serializer_class = SignupSerializer
+    http_method_names = ["post"]
 
-    def post(self):
-        serializer = SignupSerializer()
-        if serializer.is_valid():
-            serializer.save()
-        return Response(serializer.data)
+    def get_queryset(self):
+        return User.objects.all()

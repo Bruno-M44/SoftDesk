@@ -1,26 +1,39 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer, IntegerField
 
-from projects.models import Projects, Contributors
+from projects.models import Projects, Contributors, Issues, Comments
 
 
 class ContributorSerializer(ModelSerializer):
 
     class Meta:
         model = Contributors
-        fields = ["id", "project", "permission", "role"]
+        fields = "__all__"
+
+
+class IssueSerializer(ModelSerializer):
+
+    class Meta:
+        model = Issues
+        fields = "__all__"
+
+
+class CommentSerializer(ModelSerializer):
+
+    class Meta:
+        model = Comments
+        fields = "__all__"
 
 
 class ProjectsListSerializer(ModelSerializer):
     class Meta:
         model = Projects
-        fields = ["id", "title", "description", "type", "author_user_id"]
+        fields = "__all__"
 
 
 class ProjectsDetailSerializer(ModelSerializer):
-
     contributors = ContributorSerializer(many=True)
 
     class Meta:
         model = Projects
-        fields = ["id", "title", "description", "type", "author_user_id",
-                  "contributors"]
+        fields = "__all__"
+

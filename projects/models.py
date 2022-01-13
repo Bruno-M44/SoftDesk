@@ -1,28 +1,22 @@
 from django.db import models
 from django.conf import settings
+from django.contrib.auth.models import User
 
 
 class Projects(models.Model):
     title = models.CharField(max_length=300)
     description = models.CharField(max_length=1000)
     type = models.CharField(max_length=100)
-    author_user_id = models.ForeignKey(
-        to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
-        related_name="author_user_project")
+    author_user = models.ForeignKey(
+        User, on_delete=models.CASCADE,
+        related_name="projects")
 
 
 class Contributors(models.Model):
-    PERMISSIONS = (
-        ("1", "Permission 1"),
-        ("2", "Permission 2"),
-        ("3", "Permission 3"),
-    )
-    user = models.ForeignKey(
-        to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(to=settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE)
     project = models.ForeignKey(to=Projects, on_delete=models.CASCADE,
                                 related_name="contributors")
-    permission = models.CharField(max_length=300, choices=PERMISSIONS)
-    role = models.CharField(max_length=300)
 
 
 class Issues(models.Model):
