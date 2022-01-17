@@ -8,7 +8,6 @@ from authentication.views import SignupViewset
 from projects.views import ProjectsViewset, UsersViewset, IssuesViewset, \
     CommentsViewset
 
-
 router = routers.SimpleRouter()
 router.register("projects", ProjectsViewset, basename="projects")
 

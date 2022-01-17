@@ -1,4 +1,4 @@
-from rest_framework.serializers import ModelSerializer, IntegerField
+from rest_framework.serializers import ModelSerializer
 
 from projects.models import Projects, Contributors, Issues, Comments
 

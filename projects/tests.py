@@ -6,9 +6,10 @@
 
 
 from django.urls import reverse_lazy
-from rest_framework.test import APITestCase, APIRequestFactory, force_authenticate
+from rest_framework.test import APITestCase, APIRequestFactory, \
+    force_authenticate
 
-from projects.models import Contributors, Projects, Issues, Comments
+from projects.models import Projects
 from django.contrib.auth.models import User
 from projects.views import ProjectsViewset
 
@@ -16,9 +17,6 @@ from projects.views import ProjectsViewset
 class TestProject(APITestCase):
     url = reverse_lazy("projects-list")
     url_token = reverse_lazy("obtain_token")
-
-    def format_datetime(self, value):
-        return value.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
     def test_list(self):
         factory = APIRequestFactory()
