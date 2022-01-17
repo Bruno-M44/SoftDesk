@@ -36,4 +36,3 @@ class ProjectsDetailSerializer(ModelSerializer):
     class Meta:
         model = Projects
         fields = "__all__"
-

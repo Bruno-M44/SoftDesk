@@ -18,6 +18,9 @@ class Contributors(models.Model):
     project = models.ForeignKey(to=Projects, on_delete=models.CASCADE,
                                 related_name="contributors")
 
+    class Meta:
+        unique_together = ("user", "project")
+
 
 class Issues(models.Model):
     title = models.CharField(max_length=300)

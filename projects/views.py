@@ -2,13 +2,11 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import HTTP_401_UNAUTHORIZED, HTTP_204_NO_CONTENT
-from django.contrib.auth.models import User
 
 from projects.serializers import ProjectsListSerializer, \
     ProjectsDetailSerializer, ContributorSerializer, IssueSerializer, \
     CommentSerializer
 from projects.models import Projects, Contributors, Issues, Comments
-from authentication.permissions import IsProjectContributor
 
 
 class ProjectsViewset(ModelViewSet):
@@ -28,10 +26,14 @@ class ProjectsViewset(ModelViewSet):
         return super().get_serializer_class()
 
     def create(self, request, *args, **kwargs):
-        request.data._mutable = True
-        request.data["author_user"] = self.request.auth.payload["user_id"]
-        request.data._mutable = False
+        if request.data:
+            request.data._mutable = True
+            request.data["author_user"] = self.request.auth.payload["user_id"]
+            request.data._mutable = False
+        else:
+            request.data["author_user"] = self.request.auth.payload["user_id"]
         serializer = self.get_serializer(data=request.data)
+        print("serializer", serializer)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         project_instance = Projects(id=serializer.data["id"],
@@ -79,9 +81,12 @@ class UsersViewset(ModelViewSet):
     def create(self, request, *args, **kwargs):
         if self.request.user == Projects.objects.get(
                 id=self.kwargs["project_pk"]).author_user:
-            request.data._mutable = True
-            request.data["project"] = self.kwargs["project_pk"]
-            request.data._mutable = False
+            if request.data:
+                request.data._mutable = True
+                request.data["project"] = self.kwargs["project_pk"]
+                request.data._mutable = False
+            else:
+                request.data["project"] = self.kwargs["project_pk"]
             serializer = self.get_serializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             self.perform_create(serializer)
@@ -114,13 +119,20 @@ class IssuesViewset(ModelViewSet):
     def create(self, request, *args, **kwargs):
         if self.request.user == Projects.objects.get(
                 id=self.kwargs["project_pk"]).author_user:
-            request.data._mutable = True
-            request.data["project"] = self.kwargs["project_pk"]
-            request.data["author_user"] = Projects.objects.get(
-                    id=self.kwargs["project_pk"]).author_user.pk
-            if "assignee_user" not in request.data:
-                request.data["assignee_user"] = request.data["author_user"]
-            request.data._mutable = False
+            if request.data:
+                request.data._mutable = True
+                request.data["project"] = self.kwargs["project_pk"]
+                request.data["author_user"] = Projects.objects.get(
+                        id=self.kwargs["project_pk"]).author_user.pk
+                if "assignee_user" not in request.data:
+                    request.data["assignee_user"] = request.data["author_user"]
+                request.data._mutable = False
+            else:
+                request.data["project"] = self.kwargs["project_pk"]
+                request.data["author_user"] = Projects.objects.get(
+                        id=self.kwargs["project_pk"]).author_user.pk
+                if "assignee_user" not in request.data:
+                    request.data["assignee_user"] = request.data["author_user"]
             serializer = self.get_serializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             self.perform_create(serializer)
@@ -165,11 +177,16 @@ class CommentsViewset(ModelViewSet):
     def create(self, request, *args, **kwargs):
         if self.request.user == Projects.objects.get(
                 id=self.kwargs["project_pk"]).author_user:
-            request.data._mutable = True
-            request.data["issue"] = self.kwargs["issue_pk"]
-            request.data["author_user"] = Projects.objects.get(
-                    id=self.kwargs["project_pk"]).author_user.pk
-            request.data._mutable = False
+            if request.data:
+                request.data._mutable = True
+                request.data["issue"] = self.kwargs["issue_pk"]
+                request.data["author_user"] = Projects.objects.get(
+                        id=self.kwargs["project_pk"]).author_user.pk
+                request.data._mutable = False
+            else:
+                request.data["issue"] = self.kwargs["issue_pk"]
+                request.data["author_user"] = Projects.objects.get(
+                        id=self.kwargs["project_pk"]).author_user.pk
             serializer = self.get_serializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             self.perform_create(serializer)
